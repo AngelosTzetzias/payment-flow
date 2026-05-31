@@ -1,0 +1,6 @@
+# Normalize all text files to LF in the repo and on every checkout (incl. Windows),
+# so Prettier's endOfLine and cross-platform diffs stay consistent.
+* text=auto eol=lf
+
+# Shell scripts must stay LF (the SessionStart hook runs under bash).
+*.sh text eol=lf
