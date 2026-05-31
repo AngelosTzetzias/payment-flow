@@ -23,8 +23,8 @@ export function isTerminalStatus(status: PaymentStatus): boolean {
 /** Request body for creating a payment request (merchant-authenticated). */
 export interface CreatePaymentRequestDto {
   description: string;
-  /** Amount in major units (e.g. pounds). Converted to minor units server-side. */
-  amount: number;
+  /** Amount in minor units (pence) — integer. The merchant app converts major→minor before sending. */
+  amountMinor: number;
   currency?: string;
 }
 

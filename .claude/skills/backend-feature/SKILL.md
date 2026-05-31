@@ -11,6 +11,7 @@ Playbook for adding a feature module to `apps/backend`.
 
 - One folder per feature under `src/<feature>/`: `<feature>.module.ts`, `<feature>.controller.ts`, `<feature>.service.ts`, `dto/`, `<feature>.service.spec.ts`.
 - Controllers are thin: validate (DTOs + `class-validator`), delegate to the service, map to a shared type from `@payment-flow/shared`. No Prisma in controllers.
+- DTOs are **classes** in `src/<feature>/dto/*.dto.ts` that `implements` the matching `@payment-flow/shared` contract type and carry `class-validator` decorators. Never type a controller `@Body()`/`@Query()` with a bare shared **interface** — interfaces erase at runtime, so the global `ValidationPipe` silently skips them. `packages/shared` stays runtime-dependency-free (no `class-validator` there).
 - Services own all `PrismaService` access and business rules. Inject `PrismaService` (it's `@Global`).
 - Money is always `amountMinor: number` (integer pence). Never floats. Convert major→minor at the edge.
 - Request/response shapes that cross the wire MUST reuse types from `@payment-flow/shared` — add them there if missing, don't redefine.

@@ -22,6 +22,7 @@ Two co-equal pillars:
 - **No pooled funds / wallet / balance.** Every payment settles bank → the merchant's own beneficiary account directly. Pooling = FCA safeguarding territory, out of scope.
 - **Money is integer minor units (`amountMinor`, pence).** Never use floats for money. Convert major→minor at the edge.
 - **External input is untrusted.** TrueLayer webhooks must be signature-verified; the merchant identity comes from the authed JWT principal, never from a request body.
+- **Request DTOs must be validatable classes.** `@payment-flow/shared` holds types-only contracts; backend request bodies are `class-validator` classes that `implements` the shared type. Never bind a controller body/query to a bare shared interface — the global `ValidationPipe` only enforces decorated classes, so an interface validates nothing.
 - **Sandbox vs live is config** (`TRUELAYER_ENV`), never hardcoded.
 - **Secrets live in `.env`** (gitignored); document keys in `.env.example`.
 - **Merchant bank details are sensitive PII.** `sortCode` / `accountNumber` / `beneficiaryAccountName` must be encrypted at rest before real data (Stage 1), never logged, and never returned in full by the API — mask to last-2 of the sort code and last-4 of the account number in any response DTO.

@@ -13,6 +13,7 @@ You are a focused code reviewer for the payment-flow repo. Review the working di
 - **No secrets committed.** Flag credentials/tokens; they belong in `.env` (gitignored), with `.env.example` documenting keys.
 - **Webhook/customer input is untrusted.** TrueLayer webhooks must be signature-verified; merchantId must come from the authed principal, never the request body.
 - **Cross-wire shapes live in `@payment-flow/shared`.** Flag duplicated/redefined DTOs.
+- **DTO validation is real.** Flag any controller `@Body()`/`@Query()` typed with a bare shared **interface** (validation no-ops); request DTOs must be `class-validator` **classes** that `implements` the shared contract.
 - **Bank details never leak.** Flag any API response/log that includes a full `sortCode` / `accountNumber`; they must be masked (last-2 / last-4) and never logged.
 
 ## Quality checks
