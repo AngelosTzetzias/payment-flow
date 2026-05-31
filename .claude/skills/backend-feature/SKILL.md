@@ -20,11 +20,20 @@ Playbook for adding a feature module to `apps/backend`.
 
 ## Steps
 
-1. Add/confirm shared types in `packages/shared/src/index.ts`.
+1. Add/confirm shared types in `packages/shared/src/index.ts`, then **rebuild shared** (`pnpm --filter @payment-flow/shared build`) — the backend imports the compiled `dist` (CJS), so new types are invisible until shared is rebuilt.
 2. Update `prisma/schema.prisma` if new persistence is needed; create a migration (`pnpm --filter @payment-flow/backend prisma:migrate`).
 3. Scaffold the module files; register the module in `app.module.ts`.
 4. Write a `*.service.spec.ts` covering the happy path + one failure path (delegate to the `test-writer` agent for breadth).
 5. Run `pnpm --filter @payment-flow/backend typecheck && pnpm --filter @payment-flow/backend test`.
+
+## Testing (Jest + ESM)
+
+The backend runs Jest under `--experimental-vm-modules`. The `jest` object is **not** a global here (only `describe`/`it`/`expect` are):
+
+- `import { jest } from "@jest/globals";` in any spec that uses `jest.fn`/`jest.spyOn`/fake timers, and keep `@jest/globals` in devDependencies (typecheck needs it).
+- `jest.fn()` from `@jest/globals` is strictly typed — give mocks a signature, e.g. `jest.fn<(args: unknown) => Promise<unknown>>()`, or `mockResolvedValue` infers `never`.
+- For a timer-driven flow (e.g. a `setTimeout` settlement), advance with the **async** variant `await jest.advanceTimersByTimeAsync(ms)` so awaited work inside the callback flushes.
+- Specs mock `PrismaService` (`{ client: { <model>: { … } } }`) — there's no live DB in CI / the web sandbox.
 
 ## Done when
 

@@ -32,6 +32,7 @@ Hypotheses being validated: (1) can a customer pay in **under 15s, no install**?
 4. NFC static sticker (required before field testing) — **needs physical devices, run by the human.**
 5. One real £1 payment direct to own account + stopwatch the real-SCA flow — **needs real bank, run by the human.**
 6. HCE "tap my phone" (Android enhancement/showcase) — **needs an Android device + Expo dev build.**
+7. Social login for the merchant app (Google/Apple alongside email+password). Slots a provider strategy onto the Stage 1 `TokenService` seam; makes `User.passwordHash` nullable + adds a provider/account link. Can be pulled forward (naturally pairs with Stage 3).
 
 Run the `retro` skill at the end of each stage.
 

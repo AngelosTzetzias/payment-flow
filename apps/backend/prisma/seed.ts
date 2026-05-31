@@ -1,11 +1,16 @@
 /**
  * Seeds a demo merchant/user for local development.
- * Password hashing uses a placeholder here; Stage 1 introduces bcrypt + the
- * real auth module, at which point this seed switches to a proper hash.
+ * Stage 1 wires real auth: the password is bcrypt-hashed and the merchant's
+ * bank PII is AES-256-GCM encrypted via the same EncryptionService the app
+ * uses. Requires PII_ENCRYPTION_KEY (and DATABASE_URL) in .env.
+ *
+ * Dev credentials: joe@example.com / password123 (local only — not a real secret).
  */
 import "dotenv/config";
+import { hash } from "bcryptjs";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../src/generated/prisma/client.js";
+import { EncryptionService } from "../src/crypto/encryption.service.js";
 
 const connectionString = process.env.DATABASE_URL;
 if (!connectionString) {
@@ -16,20 +21,24 @@ const prisma = new PrismaClient({
   adapter: new PrismaPg({ connectionString }),
 });
 
+const DEV_PASSWORD = "password123";
+
 async function main() {
+  const encryption = new EncryptionService();
+  const passwordHash = await hash(DEV_PASSWORD, 10);
+
   const user = await prisma.user.upsert({
     where: { email: "joe@example.com" },
     update: {},
     create: {
       email: "joe@example.com",
-      // Placeholder until Stage 1 wires bcrypt; not a real credential.
-      passwordHash: "seed-placeholder",
+      passwordHash,
       merchants: {
         create: {
           name: "Joe's Barber",
-          beneficiaryAccountName: "Joe's Barber Ltd",
-          sortCode: "040004",
-          accountNumber: "00000001",
+          beneficiaryAccountName: encryption.encrypt("Joe's Barber Ltd"),
+          sortCode: encryption.encrypt("040004"),
+          accountNumber: encryption.encrypt("00000001"),
         },
       },
     },

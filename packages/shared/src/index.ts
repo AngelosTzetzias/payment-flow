@@ -53,6 +53,25 @@ export interface MerchantSummary {
   pendingCount: number;
 }
 
+/** Request body for registering a new merchant account (creates User + Merchant). */
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  merchantName: string;
+  /** The merchant's own bank account — funds settle here directly. Encrypted at rest. */
+  beneficiaryAccountName: string;
+  /** 6-digit UK sort code, no dashes. */
+  sortCode: string;
+  /** 8-digit UK account number. */
+  accountNumber: string;
+}
+
+/** Request body for logging in with email + password. */
+export interface LoginRequest {
+  email: string;
+  password: string;
+}
+
 export interface AuthResponse {
   accessToken: string;
   merchantId: string;
