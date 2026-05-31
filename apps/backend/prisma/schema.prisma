@@ -34,6 +34,8 @@ model Merchant {
   name                  String
   // Beneficiary = the merchant's own bank account. Funds settle here directly;
   // we never pool funds in a platform account.
+  // SENSITIVE: encrypt at rest before real data — see CLAUDE.md.
+  // Never return in full via the API (mask) and never log. Stage 1 adds column encryption.
   beneficiaryAccountName String
   sortCode               String
   accountNumber          String

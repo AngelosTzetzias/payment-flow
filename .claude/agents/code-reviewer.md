@@ -13,6 +13,7 @@ You are a focused code reviewer for the payment-flow repo. Review the working di
 - **No secrets committed.** Flag credentials/tokens; they belong in `.env` (gitignored), with `.env.example` documenting keys.
 - **Webhook/customer input is untrusted.** TrueLayer webhooks must be signature-verified; merchantId must come from the authed principal, never the request body.
 - **Cross-wire shapes live in `@payment-flow/shared`.** Flag duplicated/redefined DTOs.
+- **Bank details never leak.** Flag any API response/log that includes a full `sortCode` / `accountNumber`; they must be masked (last-2 / last-4) and never logged.
 
 ## Quality checks
 

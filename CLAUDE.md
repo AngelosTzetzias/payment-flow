@@ -24,6 +24,7 @@ Two co-equal pillars:
 - **External input is untrusted.** TrueLayer webhooks must be signature-verified; the merchant identity comes from the authed JWT principal, never from a request body.
 - **Sandbox vs live is config** (`TRUELAYER_ENV`), never hardcoded.
 - **Secrets live in `.env`** (gitignored); document keys in `.env.example`.
+- **Merchant bank details are sensitive PII.** `sortCode` / `accountNumber` / `beneficiaryAccountName` must be encrypted at rest before real data (Stage 1), never logged, and never returned in full by the API — mask to last-2 of the sort code and last-4 of the account number in any response DTO.
 
 ## Workflow
 
