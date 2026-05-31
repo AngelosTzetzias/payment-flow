@@ -1,0 +1,65 @@
+// Pay-by-Bank POC schema.
+// Multi-merchant and auth are designed in from day one (Stage 0), even though
+// the auth endpoints land in Stage 1. No pooled-funds / wallet / balance models
+// exist by design — every payment settles bank -> merchant beneficiary directly.
+
+generator client {
+  provider            = "prisma-client"
+  output              = "../src/generated/prisma"
+  moduleFormat        = "esm"
+  runtime             = "nodejs"
+  importFileExtension = "js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum PaymentStatus {
+  pending
+  authorizing
+  paid
+  failed
+}
+
+model User {
+  id           String     @id @default(cuid())
+  email        String     @unique
+  passwordHash String
+  createdAt    DateTime   @default(now())
+  merchants    Merchant[]
+}
+
+model Merchant {
+  id                    String           @id @default(cuid())
+  userId                String
+  user                  User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name                  String
+  // Beneficiary = the merchant's own bank account. Funds settle here directly;
+  // we never pool funds in a platform account.
+  // SENSITIVE: encrypt at rest before real data — see CLAUDE.md.
+  // Never return in full via the API (mask) and never log. Stage 1 adds column encryption.
+  beneficiaryAccountName String
+  sortCode               String
+  accountNumber          String
+  createdAt             DateTime         @default(now())
+  paymentRequests       PaymentRequest[]
+
+  @@index([userId])
+}
+
+model PaymentRequest {
+  id                String        @id @default(cuid())
+  merchantId        String
+  merchant          Merchant      @relation(fields: [merchantId], references: [id], onDelete: Cascade)
+  description       String
+  // Amount stored in minor units (pence) to avoid floating point money bugs.
+  amountMinor       Int
+  currency          String        @default("GBP")
+  status            PaymentStatus @default(pending)
+  trueLayerPaymentId String?
+  createdAt         DateTime      @default(now())
+  paidAt            DateTime?
+
+  @@index([merchantId, status])
+}
