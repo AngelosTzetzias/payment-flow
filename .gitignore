@@ -1,9 +1,21 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+node_modules/
 /.pnp
 .pnp.js
+
+# build output
+dist/
+apps/backend/dist/
+packages/shared/dist/
+
+# prisma generated client
+apps/backend/node_modules/.prisma/
+
+# expo / react native
+.expo/
+.expo-shared/
 
 # testing
 /coverage
