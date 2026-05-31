@@ -14,6 +14,7 @@ export default tseslint.config(
       "**/coverage/**",
       "**/*.config.*",
       "**/prisma/migrations/**",
+      "**/generated/**",
     ],
   },
   eslint.configs.recommended,
