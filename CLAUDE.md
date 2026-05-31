@@ -32,6 +32,7 @@ Two co-equal pillars:
 - Build in the staged sequence (see `/root/.claude/plans/...` and `docs/architecture.md`). Run `retro` at the end of each stage.
 - Use the skills: `backend-feature`, `rn-screen`, `truelayer`. Use the `test-writer` and `code-reviewer` subagents before committing non-trivial work.
 - **New dependencies pin the latest stable version.** If the latest can't be used (peer-dep conflict, a breaking major we're not ready for, unsupported Node), say so explicitly — name the constraint and the version you're pinning instead — and confirm with the user before adding it.
+- **Scripts and config must be cross-platform.** Devs run on Windows as well as Linux/CI. Don't use Unix-only shell syntax in npm scripts — set env vars via `cross-env` (e.g. `cross-env NODE_OPTIONS=… jest`), not `VAR=… cmd`. Line endings are pinned to LF by `.gitattributes` and Prettier runs `endOfLine: "auto"`, so keep both in place.
 - Commands: `pnpm install`, `pnpm db:up`, `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm -r build`.
 
 ## Tech
