@@ -13,6 +13,7 @@ Playbook for adding a feature module to `apps/backend`.
 - Controllers are thin: validate (DTOs + `class-validator`), delegate to the service, map to a shared type from `@payment-flow/shared`. No Prisma in controllers.
 - DTOs are **classes** in `src/<feature>/dto/*.dto.ts` that `implements` the matching `@payment-flow/shared` contract type and carry `class-validator` decorators. Never type a controller `@Body()`/`@Query()` with a bare shared **interface** — interfaces erase at runtime, so the global `ValidationPipe` silently skips them. `packages/shared` stays runtime-dependency-free (no `class-validator` there).
 - Services own all `PrismaService` access and business rules. Inject `PrismaService` (it's `@Global`) and query via `prismaService.client.<model>` — Prisma 7's client is composed inside the service, not subclassed.
+- Import Prisma model/enum types (e.g. `PaymentStatus`) from the generated client under `src/generated/prisma/` with a `.js` extension (the backend is ESM), **not** from `@prisma/client` (Prisma 7 no longer publishes them there). The generated dir is gitignored; `prisma generate` runs via `postinstall` / the SessionStart hook before typecheck.
 - Money is always `amountMinor: number` (integer pence). Never floats. Convert major→minor at the edge.
 - Request/response shapes that cross the wire MUST reuse types from `@payment-flow/shared` — add them there if missing, don't redefine.
 - Merchant-scoped routes use `JwtAuthGuard` and read the merchant from the authed principal — never trust a merchantId from the body.
