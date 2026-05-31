@@ -33,5 +33,6 @@ Customer phone ──scan QR / tap NFC──▶ Next.js Checkout ──▶ Backe
 4. NFC static sticker (required before field testing).
 5. One real £1 payment + stopwatch (the honest <15s test).
 6. HCE "tap my phone" (Android enhancement / showcase).
+7. Social login for the merchant app (Google/Apple alongside email+password). Adds a provider strategy on the existing `TokenService` seam (Stage 1), makes `User.passwordHash` nullable, and adds a provider/account link. Can be pulled forward once the merchant app has matured (naturally pairs with Stage 3).
 
 Run the `retro` skill at the end of each stage.
